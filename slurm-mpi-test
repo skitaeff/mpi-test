@@ -1,0 +1,21 @@
+#!/bin/bash
+# Usage: sbatch slurm-mpi-test
+
+#SBATCH --job-name=mpi-test
+
+#SBATCH --ntasks=4
+#SBATCH --ntasks-per-node=1
+#SBATCH --cpus-per-task=1
+# SBATCH --mem-per-cpu=1000
+
+# Set your minimum acceptable walltime, format: day-hours:minutes:seconds
+#SBATCH --time=0-00:01:00
+
+#SBATCH --output=mpi-test.out
+#SBATCH --error=mpi-test.err
+
+# Use reserved node to run job when a node reservation is made for you already
+# SBATCH --reservation=reservation_name
+
+# Command to run a MPI job, 
+srun ./mpi-test
