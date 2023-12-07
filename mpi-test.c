@@ -1,6 +1,7 @@
 #include <mpi.h>
 #include <stdio.h>
 #include <stdlib.h>
+//#include <time.h>
 
 int main(int argc, char** argv) {
   // Initialize the MPI environment
@@ -17,27 +18,35 @@ int main(int argc, char** argv) {
     MPI_Abort(MPI_COMM_WORLD, 1);
   }
 
-  int number;
-  if (world_rank == 0) {
-    // If we are rank 0, set the number to -1 and send it to process 1
-    number = -1;
+
+  int rank = world_rank;
+  int i;
+
+  if (world_rank != 0) {
+    // If we are rank non-0, send the rank to process 0
+
     MPI_Send(
-      /* data         = */ &number, 
+      /* data         = */ &rank, 
       /* count        = */ 1, 
       /* datatype     = */ MPI_INT, 
-      /* destination  = */ 1, 
+      /* destination  = */ 0, 
       /* tag          = */ 0, 
       /* communicator = */ MPI_COMM_WORLD);
-  } else if (world_rank == 1) {
+  } else if (world_rank == 0) {
+
+    printf("Process 0 reports that world_size = %d\n", world_size);
+
+    for(i=1; i<world_size; i++){
     MPI_Recv(
-      /* data         = */ &number, 
+      /* data         = */ &rank, 
       /* count        = */ 1, 
       /* datatype     = */ MPI_INT, 
-      /* source       = */ 0, 
+      /* source       = */ i, 
       /* tag          = */ 0, 
       /* communicator = */ MPI_COMM_WORLD, 
       /* status       = */ MPI_STATUS_IGNORE);
-    printf("Process 1 received number %d from process 0\n", number);
+    printf("Process 0 received message from rank %d\n", rank);
+   }
   }
   MPI_Finalize();
 }
